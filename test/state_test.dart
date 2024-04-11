@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:js_util';
 
 import 'package:http/http.dart' as http;
 import 'package:mockito/annotations.dart';
@@ -22,6 +23,20 @@ void main() {
     testState.addListener(() {
       expect(testState.questions.length, 6);
       expect(testState.getCurrentQuestion().questionText, startsWith("What"));
+    });
+  });
+
+  test('State model returns qui', () {
+
+    final client = MockClient();
+
+    when(client.get(Uri.parse('https://stevecassidy.github.io/harry-potter-quiz-app/lib/data/questions.json')))
+      .thenAnswer((_) async => http.Response(jsonEncode(questionsJson), 200));
+
+    var testState = StateModel(client);
+
+    testState.addListener(() {
+      expect(true,lessThanOrEqual(testState.questions.length, testState.getCurrentQuestion()));
     });
   });
 }
